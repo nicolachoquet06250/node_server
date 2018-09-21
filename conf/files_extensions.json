@@ -1,0 +1,7 @@
+{
+  "js": ".js",
+  "css": ".css",
+  "sass": ".scss",
+  "html": ".html",
+  "log": ".log"
+}

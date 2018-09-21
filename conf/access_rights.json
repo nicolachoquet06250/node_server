@@ -1,0 +1,13 @@
+{
+  "supadmin": [
+    "get_all",
+    "edit_all",
+    "delete_all",
+    "update_all"
+  ],
+  "admin": [
+    "get_all",
+    "edit_all",
+    "update_all"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "/": {
+    "controller": "controller1",
+    "method": "method2",
+    "format": "html",
+    "args": {
+      "key": "value",
+      "key2": "value"
+    }
+  },
+
+  "/toto/nicolas/choquet/test/ma_femme": {
+    "controller": "controller1",
+    "method": "method2",
+    "format": "json",
+    "args": {
+      "key": "value",
+      "key2": "value"
+    }
+  },
+
+  "/test/user/{id}/{name}": {
+    "controller": "controller1",
+    "method": "method2",
+    "format": "json",
+    "args": {
+      "id": "$id",
+      "name": "$name"
+    }
+  },
+
+  "/{id}/{name}": {
+    "controller": "controller1",
+    "method": "method2",
+    "format": "json",
+    "args": {
+      "id": "$id",
+      "name": "$name"
+    }
+  },
+
+  "/toto": {
+    "redirect": {
+        "url": "/1/nicolas/_test=voici un test?toto=test",
+        "code": 301
+    }
+  }
+}

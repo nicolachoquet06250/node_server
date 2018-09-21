@@ -1,0 +1,15 @@
+.class {
+    backdrop-filter: blur(12px);
+}
+
+.img {
+    height: 50px;
+    width: 50px;
+}
+
+.class {
+    .img {
+        height: 100px;
+        width: 100px;
+    }
+}
