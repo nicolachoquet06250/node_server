@@ -39,6 +39,23 @@
     }
   },
 
+  "/test/{lol}": {
+    "controller": "controller1",
+    "method": "method2",
+    "format": "json",
+    "args": {
+      "_test": "$id",
+      "lol": "$lol"
+    }
+  },
+
+  "/tata": {
+    "controller": "controller1",
+    "method": "method2",
+    "format": "json",
+    "args": {}
+  },
+
   "/toto": {
     "redirect": {
         "url": "/1/nicolas/_test=voici un test?toto=test",

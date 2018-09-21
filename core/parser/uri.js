@@ -29,7 +29,12 @@ module.exports = class uri {
                     if(this.args[this.request.method] === undefined) {
                         this.args[this.request.method] = {};
                     }
-                    this.args[this.request.method][arg[0]] = decodeURI(arg[1]).replace(/\+/g, ' ').replace(/%2B/g, '+');
+                    let value = decodeURI(arg[1]).replace(/\+/g, ' ').replace(/%2B/g, '+');
+                    let parsed = parseInt(value);
+                    if (!isNaN(parsed)) {
+                        value = parsed;
+                    }
+                    this.args[this.request.method][arg[0]] = value;
                 }
             });
 
@@ -37,11 +42,16 @@ module.exports = class uri {
             _url.forEach((obj, key) => {
                 if(obj !== '' && obj.indexOf('=') !== -1) {
                     let arg = obj.split('=');
-                    this.args[arg[0]] = decodeURI(arg[1]);
+                    let value = arg[1];
+                    let parsed = parseInt(value);
+                    if (!isNaN(parsed)) {
+                        value = parsed;
+                    }
+                    this.args[arg[0]] = typeof value === 'string' ? decodeURI(value) : value;
                     delete _url[key];
                 }
             });
-            this.url = _url.join('/').substr(_url.join('/').length-2, 1) === '/' ? _url.join('/').substr(0, _url.join('/').length-1) : _url.join('/');
+            this.url = _url.join('/').substr(_url.join('/').length-1, 1) === '/' ? _url.join('/').substr(0, _url.join('/').length-1) : _url.join('/');
         }
         this.parse();
     }
@@ -54,11 +64,21 @@ module.exports = class uri {
             if(obj.indexOf('=') !== -1) {
                 let arg = obj.split('=');
                 args[args.length] = decodeURI(arg.join('='));
-                this.args[arg[0]] = decodeURI(arg[1]);
+                let value = arg[1];
+                let parsed = parseInt(value);
+                if (!isNaN(parsed)) {
+                    value = parsed;
+                }
+                this.args[arg[0]] = typeof value === 'string' ? decodeURI(value) : value;
             }
         });
         Object.keys(this.METHOD).forEach(key => {
-            args[key] = decodeURI(this.METHOD[key]);
+            let value = this.METHOD[key];
+            let parsed = parseInt(value);
+            if (!isNaN(parsed)) {
+                value = parsed;
+            }
+            args[key] = typeof value === 'string' ? decodeURI(value) : value;
         });
 
         let url_probably_route = url_parsed.join('/').replace('/' + args.join('/'), '');
@@ -86,7 +106,12 @@ module.exports = class uri {
                     this.httpMethod = route['http_method'];
                 }
                 Object.keys(args).forEach((key) => {
-                    this.args[key] = decodeURI(args[key]);
+                    let value = args[key];
+                    let parsed = parseInt(value);
+                    if (!isNaN(parsed)) {
+                        value = parsed;
+                    }
+                    this.args[key] = typeof value === 'string' ? decodeURI(value) : value;
                 });
             }
         }
@@ -131,9 +156,15 @@ module.exports = class uri {
 
             this.controller = url_probably_route.split('/')[1];
             let method = url_probably_route.split('/')[2];
-            let _method = method.split('.');
-            this.format = _method.length > 1 ? _method[1] : constants.DefaultFormat;
-            this.method = _method.length > 1 ? _method[0] : method;
+            if(method !== undefined) {
+                let _method = method.split('.');
+                this.format = _method.length > 1 ? _method[1] : constants.DefaultFormat;
+                this.method = _method.length > 1 ? _method[0] : method;
+            }
+            else {
+                this.format = constants.DefaultFormat;
+                this.method = null;
+            }
 
             let files_extensions = constants.filesExtensions;
             if(selected_route && this.controller !== 'static' && !utils.in(this.method, Object.keys(files_extensions))) {
@@ -156,7 +187,12 @@ module.exports = class uri {
                     this.httpMethod = route['http_method'];
                 }
                 Object.keys(args).forEach(key => {
-                    this.args[key] = decodeURI(args[key]);
+                    let value = args[key];
+                    let parsed = parseInt(value);
+                    if (!isNaN(parsed)) {
+                        value = parsed;
+                    }
+                    this.args[key] = typeof value === 'string' ? decodeURI(value) : value;
                 });
 
                 Object.keys(this.args).forEach(key => {

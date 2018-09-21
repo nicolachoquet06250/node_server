@@ -1,6 +1,4 @@
 [
   "GET",
-  "POST",
-  "PUT",
-  "DELETE"
+  "POST"
 ]

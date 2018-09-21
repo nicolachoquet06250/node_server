@@ -113,6 +113,7 @@ http.createServer((request, response, log) => {
                                         concat += fs.readFileSync(`${constants.JsSources}/${file}${constants.filesExtensions['js']}`).toString() + "\n";
                                     }
                                 });
+                                response.writeHead((concat === '' ? 404 : 200), {'Content-Type': constants.StaticsMimeTypes['js']});
                                 response.write(concat);
                             }
                             response.end();

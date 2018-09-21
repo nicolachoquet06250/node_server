@@ -67,11 +67,11 @@ module.exports = new class constants {
     }
 
     ControllerNotFoundMessage(controller) {
-        return `controller ${controller} not found !`;
+        return `controller \`${controller}\` not found !`;
     }
 
     MethodNotFoundMessage(model, method, ext) {
-        return `method ${model}::${method}() for \`${ext}\` format not found !`;
+        return `method \`${model}::${method}()\` for \`${ext}\` format not found !`;
     }
 
     FileNotFoundMessage(file) {
