@@ -8,6 +8,3 @@ Tuto pour faire une appli d'upload en Node.js :
 
 Compatibilités Node.js + Npm :
  - https://node.green/
-
-Ce qu'il me reste à faire :
- - Les upload d'images.
