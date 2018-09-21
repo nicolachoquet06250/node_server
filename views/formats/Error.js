@@ -2,10 +2,12 @@
 let constants = require(require('../../constantsPath'));
 let utils = require(constants.CoreUtilsPath + '/utils');
 let view = require(constants.CoreMvcPath + '/view');
+let Template = require(constants.ViewsFormatPath + '/Template');
 
 module.exports = class Error extends view {
     after_construct() {
         this.object.setClass('Error');
+        this.error_template = 'Error';
     }
 
     http_code_and_type_parameter() {
@@ -26,17 +28,11 @@ module.exports = class Error extends view {
     }
 
     html_error() {
-        return '<!DOCTYPE html>' +
-            '<html>' +
-            '   <head>' +
-            '       <meta charset="utf-8">' +
-            '       <title>Erreur ' + this.http_code + '</title>' +
-            '   </head>' +
-            '   <body>' +
-            '       <h1>Erreur ' + this.http_code + '</h1>' +
-            '       <p>' + this._message + '</p>' +
-            '   </body>' +
-            '</html>';
+        let template = new Template(this.response, this.http_code, false);
+        template.Path(constants.ViewErrorPath + '/' + this.error_template);
+        template._vars['http_code'] = this.http_code;
+        template._vars['message'] = this._message;
+        return template.display(this._request);
     }
 
     json_error() {

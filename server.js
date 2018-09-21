@@ -82,6 +82,8 @@ http.createServer((request, response, log) => {
                         } else {
                             response.writeHead(404, {'Content-Type': constants.StaticsMimeTypes['css']});
                             response.write('');
+                            response.end();
+                            return;
                         }
                         response.end();
                     }
@@ -95,6 +97,7 @@ http.createServer((request, response, log) => {
                         response.writeHead(404, {'Content-Type': constants.StaticsMimeTypes['css']});
                         response.write('');
                         response.end();
+                        return;
                     }
                 }
                 else if (utils.in(method, constants.StaticsControllers) && method !== 'css') {
@@ -124,6 +127,8 @@ http.createServer((request, response, log) => {
                             } else {
                                 response.writeHead(404, {'Content-Type': constants.StaticsMimeTypes['js']});
                                 response.write('');
+                                response.end();
+                                return;
                             }
                             response.end();
                             return;
@@ -147,6 +152,8 @@ http.createServer((request, response, log) => {
                             Error_obj.type('html');
                             Error_obj.message(constants.FileNotFoundMessage(file));
                             Error_obj.display(request);
+                            response.end();
+                            return;
                         }
                     }
                     response.end();
@@ -160,6 +167,7 @@ http.createServer((request, response, log) => {
                     Error_obj.message(constants.HttpMethodUsedError(request.method));
                     Error_obj.display(request);
                     response.end();
+                    return;
                 }
                 else {
                     if (fs.existsSync(`${constants.MvcControllersPath}/${controller}${constants.filesExtensions['js']}`)) {
@@ -169,6 +177,8 @@ http.createServer((request, response, log) => {
                         let model = ctrl_obj.model(method, args, _fields, _files, format);
                         if (typeof model === 'object' && model instanceof Error) {
                             model.display(request);
+                            response.end();
+                            return;
                         } else {
                             let view = ctrl_obj.view(format);
                             if (typeof view === "object" && view instanceof Error) {
@@ -186,6 +196,7 @@ http.createServer((request, response, log) => {
                         Error_obj.message(constants.ControllerNotFoundMessage(controller));
                         Error_obj.display(request);
                         response.end();
+                        return;
                     }
                 }
             }
@@ -198,6 +209,7 @@ http.createServer((request, response, log) => {
         Error_obj.message(constants.HttpMethodNotManaged(request.method));
         Error_obj.display(request);
         response.end();
+        return;
     }
 }, constants.ServerPort);
 

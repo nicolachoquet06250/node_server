@@ -48,7 +48,7 @@ module.exports = class Template extends view {
 
                 let sub_template = m[1];
                 let template = new Template(this.response, this.http_code, false);
-                template.Path(constants.ViewsLayoutsPath+ '/' + sub_template.replace(/\./g, '/'));
+                template.Path(constants.ViewsLayoutsPath + '/' + sub_template.replace(/\./g, '/'));
                 template.Vars(this._vars);
                 this._message = this._message.replace(m[0], template.display(request));
             }

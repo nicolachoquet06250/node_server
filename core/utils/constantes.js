@@ -21,6 +21,7 @@ module.exports = new class constants {
         this.ViewsPath = `${this.RootPath}/views`;
         this.ViewsFormatPath = `${this.ViewsPath}/formats`;
         this.ViewsLayoutsPath = `${this.ViewsPath}/layouts`;
+        this.ViewErrorPath = `${this.CoreMvcPath}/views`;
         this.MvcPath = `${this.RootPath}/mvc`;
         this.MvcControllersPath = `${this.MvcPath}/controllers`;
         this.MvcModelsPath = `${this.MvcPath}/models`;
