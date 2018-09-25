@@ -1,1 +1,16 @@
-{"json":{"alias1":{"path":"/home/nicolas/Bureau/php_workspace/node_server/databases","database":"ma_db"}},"mysql":{}}
+{
+  "json": {
+    "alias1": {
+      "path": "/home/nicolas/Bureau/php_workspace/node_server/databases",
+      "database": "ma_db"
+    }
+  },
+  "mysql": {
+    "alias1": {
+      "server": "mysql-nicolas-choquet.alwaysdata.net",
+      "user": 2405,
+      "password": "2669NICOLAS2107",
+      "database": "test_db"
+    }
+  }
+}

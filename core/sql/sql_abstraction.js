@@ -4,30 +4,42 @@ let constants = require(require('../../constantsPath'));
 module.exports = class sql_abstraction {
     constructor(conf) {
         let connector = require(constants.CoreSqlPath + '/formats/' + conf.format);
-        this.connector = new connector();
-        this.connector.set_conf(conf);
+        this.connector = new connector(conf);
+
+        sql_abstraction.ASC = 'asc';
+        sql_abstraction.DESC = 'desc';
+
+        sql_abstraction.EQUAL = '=';
+        sql_abstraction.DIFFERENT = '!=';
+        sql_abstraction.SUPPERIOR = '>';
+        sql_abstraction.INFERIOR = '<';
+        sql_abstraction.IOE = '<=';
+        sql_abstraction.SOE = '>=';
     }
 
-    select() {
-        return this.connector.select();
+    select(request_obj) {
+        return this.connector.select(request_obj);
     }
-    insert() {
-        return this.connector.insert();
+    insert(request_obj) {
+        return this.connector.insert(request_obj);
     }
-    update() {
-        return this.connector.update();
+    update(request_obj) {
+        return this.connector.update(request_obj);
     }
-    delete() {
-        return this.connector.delete();
+    delete(request_obj) {
+        return this.connector.delete(request_obj);
     }
-    create() {
-        return this.connector.create();
+    create(request_obj) {
+        return this.connector.create(request_obj);
     }
-    drop() {
-        return this.connector.drop();
+    drop(request_obj) {
+        return this.connector.drop(request_obj);
     }
-    alter() {
-        return this.connector.alter();
+    alter(request_obj) {
+        return this.connector.alter(request_obj);
+    }
+    show(request_obj) {
+        return this.connector.show(request_obj);
     }
 
     query() {

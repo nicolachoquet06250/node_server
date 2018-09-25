@@ -11,7 +11,6 @@ context.create_conf({
     path: constants.RootPath + '/databases',
     database: db_name
 });
-
 context.create_conf({
     format: 'mysql',
     name: 'alias1',
@@ -26,16 +25,14 @@ context.get_conf({
     name: 'alias1'
 });
 
-let db = context.append(db_name);
+context.append(db_name);
 
-let table = db
+context.get_db(db_name)
     .set_table('ma_table')
     .set_field('id', 'number')
     .set_field('name', 'string')
-    .set_field('birthday', 'date');
-
-// console.log(context);
-// console.log(db);
-// console.log(table);
+    .set_field('birthday', 'date')
+    .set_primary_key('id')
+    .set_autoincrement('id');
 
 module.exports = context.genere();

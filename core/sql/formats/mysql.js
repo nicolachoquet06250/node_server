@@ -34,6 +34,9 @@ module.exports = class mysql {
     alter() {
         return this;
     }
+    show() {
+        return this;
+    }
 
     query() {
         return this;

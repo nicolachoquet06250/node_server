@@ -6,11 +6,22 @@ module.exports = class table {
         this.fields = {};
     }
 
-    set_field(field, type, default_value = null) {
-        this.fields[field] = {
-            type: type,
-            default: default_value
-        };
+    get_name() {
+        return this.table_name;
+    }
+
+    set_field(field, type, default_value) {
+        if(default_value !== undefined) {
+            this.fields[field] = {
+                type: type,
+                default: default_value
+            };
+        }
+        else {
+            this.fields[field] = {
+                type: type,
+            };
+        }
         return this;
     }
 

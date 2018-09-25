@@ -12,11 +12,9 @@ module.exports = class dbcontext extends cmd {
     migrate() {
         let path = constants.RootPath + '/dbcontext';
         let contexts = fs.readdirSync(path);
-        contexts.forEach((file, key) => {
-            let context;
-            if((context = require(path + '/' + file)) === false) {
+        contexts.forEach(file => {
+            if(require(path + '/' + file) === false)
                 console.log('ERROR: l\'enregistrement du context \`' + file.split('.')[0] + '\` à échoué !');
-            }
         });
         console.log(this.get('var'));
     }

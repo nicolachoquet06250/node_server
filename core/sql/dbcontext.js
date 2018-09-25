@@ -67,18 +67,22 @@ module.exports = class dbcontext {
 
     genere() {
         let conf = this.conf;
-        Object.keys(this.get_conf(this.conf)).forEach(key => {
-            conf[key] = this.get_conf(this.conf)[key];
-        });
-
+        Object.keys(this.get_conf(this.conf)).forEach(key => conf[key] = this.get_conf(this.conf)[key]);
         let connector = new sql(conf);
 
         Object.keys(this.databases).forEach(db => {
             let database = this.databases[db];
-            connector.create('database', database.get_name()).query();
+            connector.create({
+                mode: 'database',
+                database: database.get_name()
+            }).query();
             Object.keys(database.tables).forEach(tbl => {
                 let table = database.tables[tbl];
-                connector.create('table', table.get_name(), table.get_fields()).query();
+                connector.create({
+                    mode: 'table',
+                    table: table.get_name(),
+                    fields: table.get_fields()
+                }).query();
             });
         });
 
