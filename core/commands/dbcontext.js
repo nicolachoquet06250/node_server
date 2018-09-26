@@ -16,6 +16,5 @@ module.exports = class dbcontext extends cmd {
             if(require(path + '/' + file) === false)
                 console.log('ERROR: l\'enregistrement du context \`' + file.split('.')[0] + '\` à échoué !');
         });
-        console.log(this.get('var'));
     }
 };

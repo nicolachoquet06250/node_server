@@ -33,13 +33,34 @@ module.exports = class controller1 extends model {
         conf_send.name = 'alias1';
         let sql = new sql_class(conf_send);
 
-        // sql.insert({
-        //     table: table,
-        //     values: {
-        //         name: 'Nicolas',
-        //         birthday: new Date().toDateString()
-        //     }
-        // }).query();
+        let names = [
+            'Nicolas',
+            'Yann',
+            'Michel',
+            'Nolan',
+            'Laurie'
+        ];
+
+        names.forEach(name => {
+            let result = sql.select({
+                table: table,
+                where: [{
+                    key: 'name',
+                    operator: sql.EQUAL,
+                    value: name
+                }]
+            }).query();
+            let nb = result.length;
+            if(nb === 0) {
+                sql.insert({
+                    table: table,
+                    values: {
+                        name: name,
+                        birthday: new Date().toDateString()
+                    }
+                }).query();
+            }
+        });
 
         let select = sql.select({
             table: table,
@@ -119,6 +140,36 @@ module.exports = class controller1 extends model {
         let show_databases = sql.show({
             mode: 'databases'
         }).query();
+
+        sql.alter({
+            table: table,
+            mode: sql.ADD,
+            fields: {
+                age: {
+                    type: 'number'
+                }
+            }
+        }).query();
+
+        sql.alter({
+            table: table,
+            mode: sql.DROP,
+            fields: [
+                'age'
+            ]
+        }).query();
+
+        // sql.alter({
+        //     table: table,
+        //     mode: sql.CHANGE,
+        //     field: [{
+        //         old: 'birthday',
+        //         new: {
+        //             name: 'anniversaire',
+        //             type: 'string'
+        //         }
+        //     }]
+        // }).query();
 
         return {
             select: select,

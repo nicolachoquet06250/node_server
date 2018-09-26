@@ -73,6 +73,7 @@ module.exports = class json {
         let name;
         let table;
         let db_name;
+        let mode;
         switch (this.mode) {
             case this.modes['r']:
                 switch (this.key) {
@@ -144,7 +145,7 @@ module.exports = class json {
                                     else {
                                         let value_is_valid = true;
                                         this.request_obj.where.forEach(obj => {
-                                            if(!eval('line[\'' + obj.key + '\']' + ' ' + obj.operator + ' ' + obj.value)) {
+                                            if(!eval('line[\'' + obj.key + '\']' + ' ' + obj.operator + ' ' + (typeof obj.value === 'string' ? '"' + obj.value + '"' : obj.value))) {
                                                 value_is_valid = false;
                                             }
                                         });
@@ -284,7 +285,8 @@ module.exports = class json {
                                     let where = this.request_obj.where;
                                     let table_content = JSON.parse(fs.readFileSync(this.conf.path + '/' + db_name + '/' + table + '.json'));
                                     let header = table_content.header;
-                                    let body = this.select({table: table}).query();
+                                    let _sql = new sql(this.conf);
+                                    let body = _sql.select({table: table}).query();
 
                                     let fields_to_update = {};
                                     Object.keys(values).forEach(key => {
@@ -333,7 +335,8 @@ module.exports = class json {
                                 if (fs.existsSync(this.conf.path + '/' + db_name + '/' + table + '.json')) {
                                     let where = this.request_obj.where;
                                     let table_content = JSON.parse(fs.readFileSync(this.conf.path + '/' + db_name + '/' + table + '.json'));
-                                    let body = this.select({table: table}).query();
+                                    let _sql = new sql(this.conf);
+                                    let body = _sql.select({table: table}).query();
 
                                     body.forEach((line, id) => {
                                         let where_condition_is_valid = true;
@@ -364,7 +367,7 @@ module.exports = class json {
                         else console.log('ERROR: database \`' + db_name + '\` not found !');
                         break;
                     case 'create':
-                        let mode = this.request_obj.mode;
+                        mode = this.request_obj.mode;
                         name = this.request_obj[mode] !== undefined ? this.request_obj[mode] : this.conf.database;
                         db_name = this.request_obj.database !== undefined ? this.request_obj.database : this.conf.database;
                         let fields = null;
@@ -396,7 +399,106 @@ module.exports = class json {
                         }
                         return fs.existsSync(this.conf.path + '/' + db_name + '/' + name + '.json');
                     case 'drop':
+                        mode = this.request_obj.mode;
+                        if(mode !== undefined && (mode === 'database' || mode === 'table')) {
+                            let what = this.request_obj[mode];
+                        }
+                        break;
                     case 'alter':
+                        db_name = this.request_obj.database !== undefined ? this.request_obj.database : this.conf.database;
+                        table = this.request_obj.table;
+                        if(fs.existsSync(this.conf.path + '/' + db_name)) {
+                            if (table !== undefined) {
+                                if (fs.existsSync(this.conf.path + '/' + db_name + '/' + table + '.json')) {
+                                    let table_content = JSON.parse(fs.readFileSync(this.conf.path + '/' + db_name + '/' + table + '.json'));
+                                    let header = table_content.header;
+                                    let _sql = new sql(this.conf);
+                                    let body = _sql.select({table: table}).query();
+                                    let fields;
+                                    let cmp;
+                                    let _body;
+
+                                    switch (this.request_obj.mode) {
+                                        case _sql.ADD:
+                                            fields = this.request_obj.fields;
+                                            Object.keys(fields).forEach(field_name => {
+                                                if(fields[field_name].default === undefined) {
+                                                    fields[field_name].default = null;
+                                                }
+                                                header[field_name] = fields[field_name];
+                                            });
+                                            Object.keys(body).forEach(key => {
+                                                Object.keys(header).forEach(_key => {
+                                                    if(body[key][_key] === undefined) {
+                                                        body[key][_key] = header[_key].default;
+                                                    }
+                                                });
+                                            });
+                                            _body = [];
+                                            cmp = 0;
+                                            body.forEach(key => {
+                                                let _cmp = 0;
+                                                Object.keys(key).forEach(_key => {
+                                                    if(_body[cmp] === undefined) {
+                                                        _body[cmp] = [];
+                                                    }
+                                                    _body[cmp][_cmp] = key[_key];
+                                                    _cmp++;
+                                                });
+                                                cmp++;
+                                            });
+                                            fs.writeFileSync(this.conf.path + '/' + db_name + '/' + table + '.json', JSON.stringify({
+                                                header: header,
+                                                body: _body
+                                            }));
+                                            break;
+                                        case _sql.DROP:
+                                            fields = this.request_obj.fields;
+                                            fields.forEach(field => {
+                                                if(header[field] !== undefined) {
+                                                    delete header[field];
+                                                }
+                                                else console.log('ERROR: field \`' + field + '\` not found !');
+                                            });
+                                            cmp = 0;
+                                            body.forEach(obj => {
+                                                fields.forEach(field => {
+                                                    if(obj[field] !== undefined) {
+                                                        delete obj[field];
+                                                    }
+                                                });
+                                                body[cmp] = obj;
+                                                cmp++;
+                                            });
+                                            _body = [];
+                                            cmp = 0;
+                                            body.forEach(key => {
+                                                let _cmp = 0;
+                                                Object.keys(key).forEach(_key => {
+                                                    if(_body[cmp] === undefined) {
+                                                        _body[cmp] = [];
+                                                    }
+                                                    _body[cmp][_cmp] = key[_key];
+                                                    _cmp++;
+                                                });
+                                                cmp++;
+                                            });
+
+                                            fs.writeFileSync(this.conf.path + '/' + db_name + '/' + table + '.json', JSON.stringify({
+                                                header: header,
+                                                body: _body
+                                            }));
+                                            break;
+                                        case _sql.MODIFY:
+                                        case _sql.CHANGE:
+                                            break;
+                                    }
+                                }
+                                else console.log('ERROR: table \`' + table + '\` not found in database \`' + db_name + '\` !');
+                            }
+                            else console.log('ERROR: table name is expected !')
+                        }
+                        else console.log('ERROR: database \`' + db_name + '\` not found !');
                         break;
                 }
                 break;

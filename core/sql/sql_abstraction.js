@@ -15,6 +15,13 @@ module.exports = class sql_abstraction {
         this.INFERIOR = this.connector.INFERIOR === undefined ? '<' : this.connector.INFERIOR;
         this.IOE = this.connector.IOE === undefined ? '<=' : this.connector.IOE;
         this.SOE = this.connector.SOE === undefined ? '>=' : this.connector.SOE;
+
+
+        this.ADD = this.connector.ADD === undefined ? 'add' : this.connector.ADD;
+        this.DROP = this.connector.DROP === undefined ? 'drop' : this.connector.DROP;
+        this.MODIFY = this.connector.MODIFY === undefined ? 'modify' : this.connector.MODIFY;
+        this.CHANGE = this.connector.CHANGE === undefined ? 'change' : this.connector.CHANGE;
+
     }
 
     select(request_obj) {
