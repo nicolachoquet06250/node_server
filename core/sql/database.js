@@ -9,7 +9,7 @@ module.exports = class database {
     }
 
     set_table(table_n) {
-        this.tables[table_n] = new table(table_n);
+        this.tables[table_n] = new table(this, table_n);
         return this.tables[table_n];
     }
 

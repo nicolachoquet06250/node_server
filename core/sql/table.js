@@ -1,13 +1,18 @@
 "use strict";
 
 module.exports = class table {
-    constructor(name) {
+    constructor(db, name) {
+        this.db = db;
         this.table_name = name;
         this.fields = {};
     }
 
     get_name() {
         return this.table_name;
+    }
+
+    get_db() {
+        return this.db;
     }
 
     set_field(field, type, default_value) {

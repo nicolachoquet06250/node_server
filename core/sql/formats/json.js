@@ -165,7 +165,42 @@ module.exports = class json {
                         }
                         return [];
                     case 'show':
-                        break;
+                        let conf = this.conf;
+                        let results = {};
+                        switch (this.request_obj.mode) {
+                            case 'databases':
+                                if(fs.existsSync(conf.path)) {
+                                    results = fs.readdirSync(conf.path);
+                                }
+                                else console.log('ERROR: server \`' + conf.name + '\` not found !');
+                                break;
+                            case 'tables':
+                                if(fs.existsSync(conf.path)) {
+                                    if(fs.existsSync(conf.path + '/' + conf.database)) {
+                                        results = fs.readdirSync(conf.path + '/' + conf.database);
+                                    }
+                                    else console.log('ERROR: database \`' + conf.database + '\` not found in server \`' + conf.name + '\` !');
+                                }
+                                else console.log('ERROR: server \`' + conf.name + '\` not found !');
+                                break;
+                            case 'fields':
+                                if(this.request_obj.table !== undefined) {
+                                    let table = this.request_obj.table;
+                                    if (fs.existsSync(conf.path)) {
+                                        if (fs.existsSync(conf.path + '/' + conf.database)) {
+                                            if (fs.existsSync(conf.path + '/' + conf.database + '/' + table + '.json')) {
+                                                results = Object.keys(JSON.parse(fs.readFileSync(conf.path + '/' + conf.database + '/' + table + '.json').toString()).header);
+                                            }
+                                            else console.log('ERROR: table \`' + table + '\` not found in database \`' + conf.name + '.' + conf.database + '\` !');
+                                        }
+                                        else console.log('ERROR: database \`' + conf.database + '\` not found in server \`' + conf.name + '\` !');
+                                    }
+                                    else console.log('ERROR: server \`' + conf.name + '\` not found !');
+                                }
+                                else console.log('ERROR: determine in which table you want to recover the fields !');
+                                break;
+                        }
+                        return results;
                 }
                 break;
             case this.modes['w']:

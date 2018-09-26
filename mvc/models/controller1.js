@@ -28,6 +28,7 @@ module.exports = class controller1 extends model {
         let conf = require(constants.CoreConfPath + '/conf');
         let sql_conf = conf.get_sql();
         let sql_class = require(constants.CoreSqlPath + '/sql_abstraction');
+        let table_class = require(constants.CoreSqlPath + '/table');
         let conf_send = sql_conf['json']['alias1'];
         conf_send.format = 'json';
         conf_send.name = 'alias1';
@@ -40,7 +41,7 @@ module.exports = class controller1 extends model {
         //     }
         // }).query();
 
-        return sql.select({
+        let select = sql.select({
             table: table,
             fields: {
                 id: 'id',
@@ -54,5 +55,25 @@ module.exports = class controller1 extends model {
             ordered: 'id',
             direction: sql_class.ASC
         }).query();
+
+        let show_fields = sql.show({
+            mode: 'fields',
+            table: table
+        }).query();
+
+        let show_tables = sql.show({
+            mode: 'tables'
+        }).query();
+
+        let show_databases = sql.show({
+            mode: 'databases'
+        }).query();
+
+        return {
+            select: select,
+            databases: show_databases,
+            tables: show_tables,
+            fields: show_fields
+        }
     }
 };
