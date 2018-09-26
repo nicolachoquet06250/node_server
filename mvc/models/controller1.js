@@ -49,11 +49,38 @@ module.exports = class controller1 extends model {
             },
             where: [{
                 key: 'id',
-                operator: sql_class.SOE,
+                operator: sql.SOE,
                 value: 0
             }],
             ordered: 'id',
-            direction: sql_class.ASC
+            direction: sql.ASC
+        }).query();
+
+        // sql.update({
+        //     table: table,
+        //     values: {
+        //         name: '_Yann'
+        //     },
+        //     where: [{
+        //         key: 'name',
+        //         operator: sql.EQUAL,
+        //         value: 'Nicolas'
+        //     }]
+        // }).query();
+
+        let select_after_update = sql.select({
+            table: table,
+            fields: {
+                id: 'id',
+                name: 'nom'
+            },
+            where: [{
+                key: 'id',
+                operator: sql.SOE,
+                value: 0
+            }],
+            ordered: 'id',
+            direction: sql.ASC
         }).query();
 
         let show_fields = sql.show({
@@ -71,6 +98,7 @@ module.exports = class controller1 extends model {
 
         return {
             select: select,
+            select_after_update: select_after_update,
             databases: show_databases,
             tables: show_tables,
             fields: show_fields

@@ -6,15 +6,15 @@ module.exports = class sql_abstraction {
         let connector = require(constants.CoreSqlPath + '/formats/' + conf.format);
         this.connector = new connector(conf);
 
-        sql_abstraction.ASC = 'asc';
-        sql_abstraction.DESC = 'desc';
+        this.ASC = 'asc';
+        this.DESC = 'desc';
 
-        sql_abstraction.EQUAL = '=';
-        sql_abstraction.DIFFERENT = '!=';
-        sql_abstraction.SUPPERIOR = '>';
-        sql_abstraction.INFERIOR = '<';
-        sql_abstraction.IOE = '<=';
-        sql_abstraction.SOE = '>=';
+        this.EQUAL = this.connector.EQUAL === undefined ? '=' : this.connector.EQUAL;
+        this.DIFFERENT = this.connector.DIFFERENT === undefined ? '!=' : this.connector.DIFFERENT;
+        this.SUPPERIOR = this.connector.SUPPERIOR === undefined ? '>' : this.connector.SUPPERIOR;
+        this.INFERIOR = this.connector.INFERIOR === undefined ? '<' : this.connector.INFERIOR;
+        this.IOE = this.connector.IOE === undefined ? '<=' : this.connector.IOE;
+        this.SOE = this.connector.SOE === undefined ? '>=' : this.connector.SOE;
     }
 
     select(request_obj) {

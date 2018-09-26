@@ -1,6 +1,7 @@
 "use strict";
 let fs = require('fs');
 let constants = require(require('../../../constantsPath'));
+let utils = require(constants.CoreUtilsPath + '/utils');
 let sql = require(constants.CoreSqlPath + '/sql_abstraction');
 
 module.exports = class json {
@@ -9,6 +10,9 @@ module.exports = class json {
         this.modes = {'r': 'read', 'w': 'write'};
         this.request_obj = {};
         this.key = '';
+
+        this.EQUAL = '===';
+        this.DIFFERENT = '!==';
     }
 
     set_conf(conf) {
@@ -79,10 +83,15 @@ module.exports = class json {
                                 let table_content = JSON.parse(fs.readFileSync(this.conf.path + '/' + db_name + '/' + name + '.json'));
                                 let header = table_content.header;
                                 let body = [];
+                                let fields;
                                 if(this.request_obj.fields !== undefined) {
-                                    let fields = this.request_obj.fields;
-                                    let _fields = {};
-                                    if(Array.isArray(fields)) {
+                                    fields = this.request_obj.fields;
+                                }
+                                else {
+                                    fields = Object.keys(header);
+                                }
+                                let _fields = {};
+                                if(Array.isArray(fields)) {
                                         fields.forEach(key => {
                                             let alias = key;
                                             let field_is_ok = false;
@@ -99,7 +108,7 @@ module.exports = class json {
                                             }
                                         });
                                     }
-                                    else {
+                                else {
                                         Object.keys(fields).forEach(key => {
                                             let alias = fields[key];
                                             let field_is_ok = false;
@@ -116,45 +125,44 @@ module.exports = class json {
                                             }
                                         });
                                     }
-                                    table_content.body.forEach(obj => {
-                                        let line = {};
-                                        Object.keys(_fields).forEach(key => {
-                                            let alias = _fields[key];
-                                            let cmp = 0;
-                                            Object.keys(header).forEach((_key, id) => {
-                                                if(key === _key) {
-                                                    line[alias] = obj[id];
-                                                }
-                                                cmp++;
-                                            });
+                                table_content.body.forEach(obj => {
+                                    let line = {};
+                                    Object.keys(_fields).forEach(key => {
+                                        let alias = _fields[key];
+                                        let cmp = 0;
+                                        Object.keys(header).forEach((_key, id) => {
+                                            if(key === _key) {
+                                                line[alias] = obj[id];
+                                            }
+                                            cmp++;
                                         });
-                                        if(this.request_obj.where === undefined) {
+                                    });
+                                    if(this.request_obj.where === undefined) {
+                                        body[body.length] = line;
+                                    }
+                                    else {
+                                        let value_is_valid = true;
+                                        this.request_obj.where.forEach(obj => {
+                                            if(!eval('line[\'' + obj.key + '\']' + ' ' + obj.operator + ' ' + obj.value)) {
+                                                value_is_valid = false;
+                                            }
+                                        });
+                                        if(value_is_valid) {
                                             body[body.length] = line;
                                         }
+                                    }
+                                });
+                                if(this.request_obj.ordered !== undefined && this.request_obj.direction !== undefined) {
+                                    body.sort((array1, array2) => {
+                                        if(this.request_obj.direction === sql.ASC) {
+                                            return array1[this.request_obj.ordered] - array2[this.request_obj.ordered];
+                                        }
                                         else {
-                                            let value_is_valid = true;
-                                            this.request_obj.where.forEach(obj => {
-                                                if(!eval('line[\'' + obj.key + '\']' + ' ' + obj.operator + ' ' + obj.value)) {
-                                                    value_is_valid = false;
-                                                }
-                                            });
-                                            if(value_is_valid) {
-                                                body[body.length] = line;
-                                            }
+                                            return array1[this.request_obj.ordered] + array2[this.request_obj.ordered];
                                         }
                                     });
-                                    if(this.request_obj.ordered !== undefined && this.request_obj.direction !== undefined) {
-                                        body.sort((array1, array2) => {
-                                            if(this.request_obj.direction === sql.ASC) {
-                                                return array1[this.request_obj.ordered] - array2[this.request_obj.ordered];
-                                            }
-                                            else {
-                                                return array1[this.request_obj.ordered] + array2[this.request_obj.ordered];
-                                            }
-                                        });
-                                    }
-                                    return body;
                                 }
+                                return body;
                             }
                             else {
                                 console.log('ERROR: table \`'+ name +'\` not found in database \`' + db_name + '\` !');
@@ -175,11 +183,12 @@ module.exports = class json {
                                 else console.log('ERROR: server \`' + conf.name + '\` not found !');
                                 break;
                             case 'tables':
+                                db_name = this.request_obj.database !== undefined ? this.request_obj.database : conf.database;
                                 if(fs.existsSync(conf.path)) {
-                                    if(fs.existsSync(conf.path + '/' + conf.database)) {
-                                        results = fs.readdirSync(conf.path + '/' + conf.database);
+                                    if(fs.existsSync(conf.path + '/' + db_name)) {
+                                        results = fs.readdirSync(conf.path + '/' + db_name);
                                     }
-                                    else console.log('ERROR: database \`' + conf.database + '\` not found in server \`' + conf.name + '\` !');
+                                    else console.log('ERROR: database \`' + db_name + '\` not found in server \`' + conf.name + '\` !');
                                 }
                                 else console.log('ERROR: server \`' + conf.name + '\` not found !');
                                 break;
@@ -260,16 +269,61 @@ module.exports = class json {
                                 table_content.body = body;
                                 fs.writeFileSync(this.conf.path + '/' + db_name + '/' + name + '.json', JSON.stringify(table_content));
                             }
-                            else {
-                                console.log('ERROR: table \`'+ name +'\` not found in database \`' + db_name + '\` !');
-                            }
+                            else console.log('ERROR: table \`'+ name +'\` not found in database \`' + db_name + '\` !');
                         }
-                        else {
-                            console.log('ERROR: database \`' + db_name + '\` not found !');
-                        }
-                        // console.log(this.key, this.mode, this.request_obj, this.conf);
+                        else console.log('ERROR: database \`' + db_name + '\` not found !');
                         break;
                     case 'update':
+                        db_name = this.request_obj.database !== undefined ? this.request_obj.database : this.conf.database;
+                        let table = this.request_obj.table;
+                        if(fs.existsSync(this.conf.path + '/' + db_name)) {
+                            if(table !== undefined) {
+                                if (fs.existsSync(this.conf.path + '/' + db_name + '/' + table + '.json')) {
+                                    let values = this.request_obj.values;
+                                    let where = this.request_obj.where;
+                                    let table_content = JSON.parse(fs.readFileSync(this.conf.path + '/' + db_name + '/' + table + '.json'));
+                                    let header = table_content.header;
+                                    let body = this.select({table: table}).query();
+
+                                    let fields_to_update = {};
+                                    Object.keys(values).forEach(key => {
+                                        if(utils.in(key, Object.keys(header))) {
+                                            fields_to_update[key] = values[key];
+                                        }
+                                    });
+
+                                    body.forEach((line, id) => {
+                                        Object.keys(fields_to_update).forEach(field => {
+                                            let where_condition_is_valid = true;
+                                            if(where !== undefined) {
+                                                where.forEach(obj => {
+                                                    if(!eval('line[\'' + obj.key + '\'] ' + obj.operator + ' ' + (typeof obj.value === 'string' ? '"' + obj.value + '"' : obj.value))) {
+                                                        where_condition_is_valid = false;
+                                                    }
+                                                });
+                                            }
+                                            if(where_condition_is_valid) {
+                                                Object.keys(fields_to_update).forEach(key => {
+                                                    line[key] = fields_to_update[key];
+                                                });
+
+                                                let line_values = [];
+                                                Object.keys(line).forEach(key => {
+                                                    line_values[line_values.length] = line[key];
+                                                });
+
+                                                table_content.body[id] = line_values;
+                                            }
+                                        });
+                                    });
+                                    fs.writeFileSync(this.conf.path + '/' + db_name + '/' + table + '.json', JSON.stringify(table_content));
+                                }
+                                else console.log('ERROR: table \`' + table + '\` not found in database \`' + db_name + '\` !');
+                            }
+                            else console.log('ERROR: table name is expected !')
+                        }
+                        else console.log('ERROR: database \`' + db_name + '\` not found !');
+                        break;
                     case 'delete':
                         break;
                     case 'create':
