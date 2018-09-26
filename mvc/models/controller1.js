@@ -28,11 +28,11 @@ module.exports = class controller1 extends model {
         let conf = require(constants.CoreConfPath + '/conf');
         let sql_conf = conf.get_sql();
         let sql_class = require(constants.CoreSqlPath + '/sql_abstraction');
-        let table_class = require(constants.CoreSqlPath + '/table');
         let conf_send = sql_conf['json']['alias1'];
         conf_send.format = 'json';
         conf_send.name = 'alias1';
         let sql = new sql_class(conf_send);
+
         // sql.insert({
         //     table: table,
         //     values: {
@@ -56,19 +56,43 @@ module.exports = class controller1 extends model {
             direction: sql.ASC
         }).query();
 
-        // sql.update({
-        //     table: table,
-        //     values: {
-        //         name: '_Yann'
-        //     },
-        //     where: [{
-        //         key: 'name',
-        //         operator: sql.EQUAL,
-        //         value: 'Nicolas'
-        //     }]
-        // }).query();
+        sql.update({
+            table: table,
+            values: {
+                name: '_Yann'
+            },
+            where: [{
+                key: 'name',
+                operator: sql.EQUAL,
+                value: 'Nicolas'
+            }]
+        }).query();
 
         let select_after_update = sql.select({
+            table: table,
+            fields: {
+                id: 'id',
+                name: 'nom'
+            },
+            where: [{
+                key: 'id',
+                operator: sql.SOE,
+                value: 0
+            }],
+            ordered: 'id',
+            direction: sql.ASC
+        }).query();
+
+        sql.delete({
+            table: table,
+            where: [{
+                key: 'name',
+                operator: sql.EQUAL,
+                value: '_Yann'
+            }]
+        }).query();
+
+        let select_after_delete = sql.select({
             table: table,
             fields: {
                 id: 'id',
@@ -99,6 +123,7 @@ module.exports = class controller1 extends model {
         return {
             select: select,
             select_after_update: select_after_update,
+            select_after_delete: select_after_delete,
             databases: show_databases,
             tables: show_tables,
             fields: show_fields

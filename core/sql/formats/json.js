@@ -71,6 +71,7 @@ module.exports = class json {
 
     query() {
         let name;
+        let table;
         let db_name;
         switch (this.mode) {
             case this.modes['r']:
@@ -275,7 +276,7 @@ module.exports = class json {
                         break;
                     case 'update':
                         db_name = this.request_obj.database !== undefined ? this.request_obj.database : this.conf.database;
-                        let table = this.request_obj.table;
+                        table = this.request_obj.table;
                         if(fs.existsSync(this.conf.path + '/' + db_name)) {
                             if(table !== undefined) {
                                 if (fs.existsSync(this.conf.path + '/' + db_name + '/' + table + '.json')) {
@@ -325,6 +326,42 @@ module.exports = class json {
                         else console.log('ERROR: database \`' + db_name + '\` not found !');
                         break;
                     case 'delete':
+                        db_name = this.request_obj.database !== undefined ? this.request_obj.database : this.conf.database;
+                        table = this.request_obj.table;
+                        if(fs.existsSync(this.conf.path + '/' + db_name)) {
+                            if (table !== undefined) {
+                                if (fs.existsSync(this.conf.path + '/' + db_name + '/' + table + '.json')) {
+                                    let where = this.request_obj.where;
+                                    let table_content = JSON.parse(fs.readFileSync(this.conf.path + '/' + db_name + '/' + table + '.json'));
+                                    let body = this.select({table: table}).query();
+
+                                    body.forEach((line, id) => {
+                                        let where_condition_is_valid = true;
+                                        if(where !== undefined) {
+                                            where.forEach(obj => {
+                                                if(!eval('line[\'' + obj.key + '\'] ' + obj.operator + ' ' + (typeof obj.value === 'string' ? '"' + obj.value + '"' : obj.value))) {
+                                                    where_condition_is_valid = false;
+                                                }
+                                            });
+                                        }
+                                        if(where_condition_is_valid) {
+                                            delete table_content.body[id];
+                                        }
+                                    });
+                                    let _table_content_body = [];
+                                    table_content.body.forEach(obj => {
+                                        if(obj !== undefined && obj !== null !== '') {
+                                            _table_content_body[_table_content_body.length] = obj;
+                                        }
+                                    });
+                                    table_content.body = _table_content_body;
+                                    fs.writeFileSync(this.conf.path + '/' + db_name + '/' + table + '.json', JSON.stringify(table_content));
+                                }
+                                else console.log('ERROR: table \`' + table + '\` not found in database \`' + db_name + '\` !');
+                            }
+                            else console.log('ERROR: table name is expected !')
+                        }
+                        else console.log('ERROR: database \`' + db_name + '\` not found !');
                         break;
                     case 'create':
                         let mode = this.request_obj.mode;
