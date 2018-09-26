@@ -225,6 +225,15 @@ module.exports = class controller1 extends model {
             direction: sql.ASC
         }).query();
 
+        sql.drop({
+            mode: 'table',
+            table: table
+        }).query();
+
+        sql.drop({
+            mode: 'database'
+        }).query();
+
         return {
             select: {
                 select: select,
