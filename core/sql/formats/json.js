@@ -189,6 +189,10 @@ module.exports = class json {
                                 if(fs.existsSync(conf.path)) {
                                     if(fs.existsSync(conf.path + '/' + db_name)) {
                                         results = fs.readdirSync(conf.path + '/' + db_name);
+                                        results.forEach((file, id) => {
+                                            file = file.split('.');
+                                            results[id] = file[0];
+                                        })
                                     }
                                     else console.log('ERROR: database \`' + db_name + '\` not found in server \`' + conf.name + '\` !');
                                 }
@@ -260,7 +264,7 @@ module.exports = class json {
                                             value = this.request_obj.values[key]
                                         }
                                         else if (obj.default === undefined && this.request_obj.values[key] === undefined) {
-                                            console.log('ERROR: expected field \`' + key + '\`')
+                                            console.log('ERROR: expected field \`' + key + '\`');
                                         }
                                     }
                                     values[values.length] = value;
@@ -414,13 +418,12 @@ module.exports = class json {
                                     let header = table_content.header;
                                     let _sql = new sql(this.conf);
                                     let body = _sql.select({table: table}).query();
-                                    let fields;
+                                    let fields = this.request_obj.fields;
                                     let cmp;
                                     let _body;
 
                                     switch (this.request_obj.mode) {
                                         case _sql.ADD:
-                                            fields = this.request_obj.fields;
                                             Object.keys(fields).forEach(field_name => {
                                                 if(fields[field_name].default === undefined) {
                                                     fields[field_name].default = null;
@@ -453,7 +456,6 @@ module.exports = class json {
                                             }));
                                             break;
                                         case _sql.DROP:
-                                            fields = this.request_obj.fields;
                                             fields.forEach(field => {
                                                 if(header[field] !== undefined) {
                                                     delete header[field];
@@ -490,7 +492,36 @@ module.exports = class json {
                                             }));
                                             break;
                                         case _sql.MODIFY:
+                                            if(fields !== undefined) {
+                                                Object.keys(fields).forEach(field_name => {
+                                                    if(header[field_name] !== undefined) {
+                                                        Object.keys(fields[field_name]).forEach(key => {
+                                                            header[field_name][key] = fields[field_name][key];
+                                                        });
+                                                    }
+                                                });
+                                                table_content.header = header;
+                                                fs.writeFileSync(this.conf.path + '/' + db_name + '/' + table + '.json', JSON.stringify(table_content));
+                                            }
+                                            break;
                                         case _sql.CHANGE:
+                                            if(fields !== undefined) {
+                                                let _header = {};
+                                                fields.forEach(field => {
+                                                    let old = field.old;
+                                                    let _new = field.new;
+                                                    Object.keys(header).forEach(key => {
+                                                        if(key === old) {
+                                                            let new_name = _new.name;
+                                                            delete _new.name;
+                                                            _header[new_name] = _new;
+                                                        }
+                                                        else _header[key] = header[key];
+                                                    });
+                                                });
+                                                table_content.header = _header;
+                                                fs.writeFileSync(this.conf.path + '/' + db_name + '/' + table + '.json', JSON.stringify(table_content));
+                                            }
                                             break;
                                     }
                                 }

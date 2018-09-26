@@ -151,6 +151,17 @@ module.exports = class controller1 extends model {
             }
         }).query();
 
+        let select_after_alter_add = sql.select({
+            table: table,
+            where: [{
+                key: 'id',
+                operator: sql.SOE,
+                value: 0
+            }],
+            ordered: 'id',
+            direction: sql.ASC
+        }).query();
+
         sql.alter({
             table: table,
             mode: sql.DROP,
@@ -159,25 +170,76 @@ module.exports = class controller1 extends model {
             ]
         }).query();
 
-        // sql.alter({
-        //     table: table,
-        //     mode: sql.CHANGE,
-        //     field: [{
-        //         old: 'birthday',
-        //         new: {
-        //             name: 'anniversaire',
-        //             type: 'string'
-        //         }
-        //     }]
-        // }).query();
+        let select_after_alter_drop = sql.select({
+            table: table,
+            where: [{
+                key: 'id',
+                operator: sql.SOE,
+                value: 0
+            }],
+            ordered: 'id',
+            direction: sql.ASC
+        }).query();
+
+        sql.alter({
+            table: table,
+            mode: sql.CHANGE,
+            fields: [{
+                old: 'birthday',
+                new: {
+                    name: 'anniversaire',
+                    type: 'string'
+                }
+            }]
+        }).query();
+
+        let select_after_alter_change = sql.select({
+            table: table,
+            where: [{
+                key: 'id',
+                operator: sql.SOE,
+                value: 0
+            }],
+            ordered: 'id',
+            direction: sql.ASC
+        }).query();
+
+        sql.alter({
+            table: table,
+            mode: sql.MODIFY,
+            fields: {
+                anniversaire: {
+                    type: 'string'
+                }
+            }
+        }).query();
+
+        let select_after_alter_modify = sql.select({
+            table: table,
+            where: [{
+                key: 'id',
+                operator: sql.SOE,
+                value: 0
+            }],
+            ordered: 'id',
+            direction: sql.ASC
+        }).query();
 
         return {
-            select: select,
-            select_after_update: select_after_update,
-            select_after_delete: select_after_delete,
-            databases: show_databases,
-            tables: show_tables,
-            fields: show_fields
+            select: {
+                select: select,
+                select_after_update: select_after_update,
+                select_after_delete: select_after_delete,
+                select_after_alter_add: select_after_alter_add,
+                select_after_alter_drop: select_after_alter_drop,
+                select_after_alter_change: select_after_alter_change,
+                select_after_alter_modify: select_after_alter_modify
+            },
+            show: {
+                databases: show_databases,
+                tables: show_tables,
+                fields: show_fields
+            }
         }
     }
 };
