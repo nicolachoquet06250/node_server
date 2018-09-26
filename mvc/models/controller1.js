@@ -49,8 +49,8 @@ module.exports = class controller1 extends model {
             },
             where: [{
                 key: 'id',
-                value: 0,
-                operator: sql_class.SOE
+                operator: sql_class.SOE,
+                value: 0
             }],
             ordered: 'id',
             direction: sql_class.ASC
