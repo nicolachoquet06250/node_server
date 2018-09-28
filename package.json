@@ -7,7 +7,8 @@
     "fs": "^0.0.1-security",
     "jquery": "^3.3.1",
     "node-sass": "^4.9.3",
-    "sys": "0.0.1"
+    "sys": "0.0.1",
+    "mysql": "^2.16.0"
   },
   "scripts": {
     "start": "node core/sun/server.js",
