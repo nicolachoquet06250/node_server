@@ -33,6 +33,23 @@ module.exports = class controller1 extends model {
         conf_send.name = 'alias1';
         let sql = new sql_class(conf_send);
 
+        sql.create({
+            mode: 'database'
+        }).query();
+        sql.create({
+            mode: 'table',
+            table: table,
+            fields: {
+                id: {
+                    type: 'number',
+                    primary: true,
+                    autoincrement: true
+                },
+                name: {type: 'string'},
+                birthday: {type: 'date'}
+            }
+        }).query();
+
         let names = [
             'Nicolas',
             'Yann',

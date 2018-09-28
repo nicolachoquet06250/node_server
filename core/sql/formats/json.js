@@ -407,9 +407,12 @@ module.exports = class json {
                         if(mode !== undefined && (mode === 'database' || mode === 'table')) {
                             let database = this.request_obj.database === undefined ? this.conf.database : this.request_obj.database;
                             let table = this.request_obj[mode];
-                            if(mode === 'database') fs.rmdirSync(this.conf.path + '/' + database);
+                            if(mode === 'database' && fs.existsSync(this.conf.path + '/' + database)) {
+                                fs.rmdirSync(this.conf.path + '/' + database);
+                            }
                             else
-                                if(table !== undefined) fs.unlink(this.conf.path + '/' + database + '/' + table + '.json');
+                                if(table !== undefined && fs.existsSync(this.conf.path + '/' + database + '/' + table + '.json'))
+                                    fs.unlink(this.conf.path + '/' + database + '/' + table + '.json');
                                 else console.log('ERROR: expected table name !');
                         }
                         break;
