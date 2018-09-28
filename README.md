@@ -21,6 +21,9 @@ Mysql with node.js :
  
 Promises :
  - https://www.martar.fr/articles/decouverte-des-promesses-javascript
+
+Curl and http requests in node.js :
+ - https://stackoverflow.com/questions/6819143/curl-equivalent-in-nodejs
   
 Regex tester :
  - https://regex101.com/
