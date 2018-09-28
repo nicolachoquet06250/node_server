@@ -10,7 +10,7 @@
     "sys": "0.0.1"
   },
   "scripts": {
-    "start": "node server.js",
-    "nc": "node nc.js"
+    "start": "node core/sun/server.js",
+    "ncom": "node core/run/nc.js"
   }
 }

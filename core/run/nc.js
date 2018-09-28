@@ -7,7 +7,7 @@ process.argv.forEach(obj => {
     }
 });
 
-let constants = require(require('./constantsPath'));
+let constants = require(require('../../constantsPath'));
 let commands = require(constants.CoreUtilsPath + '/command');
 
 commands.execute(argv.join(' '));

@@ -1,5 +1,5 @@
 "use strict";
-let constants = require(require('./constantsPath'));
+let constants = require(require('../../constantsPath'));
 let utils = require(constants.CoreUtilsPath + '/utils');
 let args_class = require(constants.CoreParsersPath + '/args');
 let fs = require('fs');
