@@ -1,12 +1,12 @@
-# Serveur Node.js sans express.
+# Node.js server without express.
 
 Pour tester : 
  - [http://localhost:1337](http://localhost:1337)
 
-Tuto pour faire une appli d'upload en Node.js : 
+Tutorial for an upload application in node.js : 
  - http://blog.robomatix.net/blog/uploader-un-fichier-avec-nodejs
 
-Compatibilités Node.js + Npm :
+Node.js + Npm Compatibilities :
  - https://node.green/
  
 Mysql with node.js :
@@ -14,11 +14,13 @@ Mysql with node.js :
  - https://www.w3schools.com/nodejs/nodejs_mysql.asp
  - https://www.npmjs.com/package/mysql
  - https://www.sitepoint.com/using-node-mysql-javascript-client/
-    - tutoriels :
+    - tutorials :
         - https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/
+    - Mysql keywords and syntaxes:
+     - https://sql.sh/cours/create-database
  
-Les Promises :
+Promises :
  - https://www.martar.fr/articles/decouverte-des-promesses-javascript
   
-Testeur de regex :
+Regex tester :
  - https://regex101.com/
