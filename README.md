@@ -27,3 +27,9 @@ Curl and http requests in node.js :
   
 Regex tester :
  - https://regex101.com/
+ 
+Electron tutorial for front application included :
+ - https://www.supinfo.com/articles/single/4157-creation-votre-premiere-application-desktop-avec-html-js-electron
+ - https://stackoverrun.com/fr/q/10886304
+ - https://zestedesavoir.com/tutoriels/996/vos-applications-avec-electron/
+ - https://electronjs.org/docs/all
