@@ -4,7 +4,10 @@
   "description": "application electron.js avec un webservice local.",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node scripts/start.js",
+    "stop": "node scripts/stop.js",
+    "restart": "node scripts/restart.js",
+    "ncom": "node server/core/run/nc.js"
   },
   "repository": {
     "type": "git",

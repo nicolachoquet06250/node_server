@@ -6,7 +6,7 @@
   "main": "main.js",
   "bin": "cli.js",
   "scripts": {
-    "start": "electron .&",
+    "start": "electron . &",
     "dev": "electron . --debug",
     "test": "mocha && standard",
     "package": "npm-run-all package:*",

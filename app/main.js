@@ -1,3 +1,5 @@
+const process_logs = require('../common/process_logs');
+
 // only add update server if it's not being run from cli
 if (require.main !== module) {
   require('update-electron-app')({
@@ -8,6 +10,7 @@ if (require.main !== module) {
 const path = require('path')
 const glob = require('glob')
 const {app, BrowserWindow} = require('electron')
+const fs = require('fs');
 
 const debug = /--debug/.test(process.argv[2])
 
@@ -88,5 +91,7 @@ function loadDemos () {
   const files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
   files.forEach((file) => { require(file) })
 }
+
+process_logs.write_pid('app');
 
 initialize()

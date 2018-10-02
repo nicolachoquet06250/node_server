@@ -11,8 +11,10 @@ let confs = require(constants.CoreConfPath + '/conf');
 let qs = require("querystring");
 let formidable = require('formidable');
 const {exec} = require('child_process');
+let process_logs = require('../../../common/process_logs');
 
 http.createServer((request, response, log) => {
+
     if(utils.in(request.method, constants.HttpMethods)) {
         let body='';
         let _files = {};
@@ -227,5 +229,6 @@ http.createServer((request, response, log) => {
         return;
     }
 }, constants.ServerPort);
+process_logs.write_pid('app');
 
 console.log(constants.ServerHomeMessage);

@@ -12,8 +12,6 @@
     "fs-extra": "^0.26.5"
   },
   "scripts": {
-    "start": "node core/run/server.js > logs/session_logs.log &",
-    "ncom": "node core/run/nc.js",
-    "stop": "killall node;killall electron"
+    "start": "node core/run/server.js > logs/session_logs.log &"
   }
 }
