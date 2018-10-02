@@ -4,8 +4,7 @@
   "description": "application electron.js avec un webservice local.",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node main.js"
   },
   "repository": {
     "type": "git",
@@ -21,8 +20,5 @@
   ],
   "author": "Nicolas CHOQUET",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/nicolachoquet06250/node_server/issues"
-  },
   "homepage": "https://github.com/nicolachoquet06250/node_server#readme"
 }
