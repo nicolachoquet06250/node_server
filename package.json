@@ -1,19 +1,28 @@
 {
-  "name": "base_object",
+  "name": "node_server",
   "version": "1.0.0",
-  "dependencies": {
-    "cli-color": "^1.3.0",
-    "formidable": "^1.2.1",
-    "fs": "^0.0.1-security",
-    "jquery": "^3.3.1",
-    "node-sass": "^4.9.3",
-    "sys": "0.0.1",
-    "mysql": "^2.16.0",
-    "fs-extra": "^0.26.5"
-  },
+  "description": "application electron.js avec un webservice local.",
+  "main": "main.js",
   "scripts": {
-    "start": "cd app/; node_modules/nw/bin/nw .; ce ../; node core/run/server.js > logs/session_logs.log &",
-    "ncom": "node core/run/nc.js",
-    "stop": "killall node;killall electron"
-  }
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicolachoquet06250/node_server.git"
+  },
+  "keywords": [
+    "nodejs",
+    "electron",
+    "electron.js",
+    "javascript",
+    "mvc",
+    "webservice"
+  ],
+  "author": "Nicolas CHOQUET",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nicolachoquet06250/node_server/issues"
+  },
+  "homepage": "https://github.com/nicolachoquet06250/node_server#readme"
 }
