@@ -14,26 +14,17 @@ const {exec} = require('child_process');
 let process_logs = require('../../../common/process_logs');
 
 http.createServer((request, response, log) => {
-
     if(utils.in(request.method, constants.HttpMethods)) {
-        let body='';
-        let _files = {};
-        let _fields = {};
-
-        request.on('data', data => {
-            body += data;
-        });
-
+        let body='',  _files = {}, _fields = {};
+        request.on('data', data => body += data);
         let form = new formidable.IncomingForm();
-        form.parse(request, function (err, fields, files) {
+        form.parse(request, (err, fields, files) => {
             _fields = fields;
             _files = files;
         });
-
         request.on('end',() => {
             try {
                 let url = request.url;
-
                 let uri_obj = new uri(url, request, qs.parse(body));
                 let controller = uri_obj.get_controller();
                 let method = uri_obj.get_method();
@@ -44,7 +35,9 @@ http.createServer((request, response, log) => {
 
                 if (redirect !== null && redirect !== undefined) {
                     utils.http_log(request, response, `Redirection ${redirect.code} vers ${constants.Host}:${constants.ServerPort}${redirect.url}`);
-                    response.writeHead(redirect.code, {Location: `${constants.Host}:${constants.ServerPort + redirect.url}`});
+                    response.writeHead(redirect.code, {
+                        Location: `${constants.Host}:${constants.ServerPort + redirect.url}`
+                    });
                     response.end();
                     return;
                 }
@@ -54,17 +47,15 @@ http.createServer((request, response, log) => {
                     let path;
                     if (method === 'css') {
                         if (args.get('a')) {
-                            let authorisations = confs.get_authorizations('scss');
-                            authorisations = new args_class(authorisations);
+                            let authorisations = new args_class(confs.get_authorizations('scss'));
                             let files;
                             if ((files = authorisations.get(args.get('a'))) !== false) {
                                 let concat = '';
                                 files.forEach(file => {
-                                    if (fs.existsSync(`${constants.ScssSources}/${file}${constants.filesExtensions['sass']}`)) {
+                                    if (fs.existsSync(`${constants.ScssSources}/${file}${constants.filesExtensions['sass']}`))
                                         concat += fs.readFileSync(`${constants.ScssSources}/${file}${constants.filesExtensions['sass']}`).toString() + "\n";
-                                    }
                                 });
-                                fs.writeFile(`${constants.ScssSources}/${constants.ScssUncompileSuffix}${args.get('a')}${constants.filesExtensions['sass']}`, concat);
+                                fs.writeFileSync(`${constants.ScssSources}/${constants.ScssUncompileSuffix}${args.get('a')}${constants.filesExtensions['sass']}`, concat);
                                 exec(constants.SassCompilationCommand(args.get('a')), () => {
                                     exec(constants.SassCompilationCommand(args.get('a'), true), (err, out) => {
                                         if (out !== '') {
@@ -79,9 +70,7 @@ http.createServer((request, response, log) => {
                             path = `${constants.StaticsPath}/${method}/${file}`;
                             if (fs.existsSync(path)) {
                                 response.writeHead(200, {'Content-Type': constants.StaticsMimeTypes['css']});
-                                fs.readFile(path, null, function (err, data) {
-                                    response.write(data.toString());
-                                });
+                                response.write(fs.readFileSync(path).toString());
                             } else {
                                 response.writeHead(404, {'Content-Type': constants.StaticsMimeTypes['css']});
                                 response.write('');
@@ -90,12 +79,10 @@ http.createServer((request, response, log) => {
                             }
                             response.end();
                         }
-
                         path = `${constants.StaticsPath}/${method}/${file}`;
                         if (fs.existsSync(path)) {
                             response.writeHead(200, {'Content-Type': constants.StaticsMimeTypes['css']});
-                            fs.readFile(constants.ScssDestination + '/' + file, null, function (err, data) {
-                            });
+                            response.write(fs.readFileSync(constants.ScssDestination + '/' + file).toString());
                         } else {
                             response.writeHead(404, {'Content-Type': constants.StaticsMimeTypes['css']});
                             response.write('');
@@ -106,8 +93,7 @@ http.createServer((request, response, log) => {
                     else if (utils.in(method, constants.StaticsControllers) && method !== 'css') {
                         if (method === 'js') {
                             if (args.get('a')) {
-                                let authorisations = confs.get_authorizations('js');
-                                authorisations = new args_class(authorisations);
+                                let authorisations = new args_class(confs.get_authorizations('js'));
                                 let files;
                                 if ((files = authorisations.get(args.get('a'))) !== false) {
                                     let concat = '';
@@ -125,9 +111,7 @@ http.createServer((request, response, log) => {
                                 path = `${constants.StaticsPath}/${method}/${file}`;
                                 if (fs.existsSync(path)) {
                                     response.writeHead(200, {'Content-Type': constants.StaticsMimeTypes['js']});
-                                    fs.readFile(path, null, function (err, data) {
-                                        response.write(data.toString());
-                                    });
+                                    response.write(fs.readFileSync(path).toString());
                                 } else {
                                     response.writeHead(404, {'Content-Type': constants.StaticsMimeTypes['js']});
                                     response.write('');
@@ -140,15 +124,10 @@ http.createServer((request, response, log) => {
                         }
                         if (fs.existsSync(`${constants.StaticsPath}/${method}/${file}`)) {
                             if (constants.StaticsMimeTypes[method] !== undefined) {
-                                let mime;
-                                if (constants.StaticsMimeTypes[method].split('/')[1] !== '') {
-                                    mime = constants.StaticsMimeTypes[method];
-                                } else {
-                                    mime = constants.StaticsMimeTypes[method] + method;
-                                }
+                                let mime = constants.StaticsMimeTypes[method].split('/')[1] !== '' ? constants.StaticsMimeTypes[method] : constants.StaticsMimeTypes[method] + method;
                                 response.writeHead(200, {'Content-Type': mime});
                             }
-                            response.write(fs.readFileSync(`${constants.StaticsPath}/${method}/${file}`));
+                            response.write(fs.readFileSync(`${constants.StaticsPath}/${method}/${file}`).toString());
                         } else {
                             if (constants.StaticsMimeTypes[method] !== undefined) {
                                 let Error_obj = new Error(response, 404);
@@ -185,11 +164,8 @@ http.createServer((request, response, log) => {
                                 return;
                             } else {
                                 let view = ctrl_obj.view(format);
-                                if (typeof view === "object" && view instanceof Error) {
-                                    view.type(format);
-                                } else {
-                                    log(request, response, null);
-                                }
+                                if (typeof view === "object" && view instanceof Error) view.type(format);
+                                else log(request, response, null);
                                 view.display(request);
                                 response.end();
                             }
@@ -230,5 +206,4 @@ http.createServer((request, response, log) => {
     }
 }, constants.ServerPort);
 process_logs.write_pid('server');
-
 console.log(constants.ServerHomeMessage);

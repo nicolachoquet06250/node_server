@@ -10,7 +10,6 @@ if (require.main !== module) {
 const path = require('path')
 const glob = require('glob')
 const {app, BrowserWindow} = require('electron')
-const fs = require('fs');
 
 const debug = /--debug/.test(process.argv[2])
 
@@ -32,9 +31,7 @@ function initialize () {
       title: app.getName()
     }
 
-    if (process.platform === 'linux') {
-      windowOptions.icon = path.join(__dirname, '/assets/app-icon/png/512.png')
-    }
+    if (process.platform === 'linux') windowOptions.icon = path.join(__dirname, '/assets/app-icon/png/512.png')
 
     mainWindow = new BrowserWindow(windowOptions)
     mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
@@ -46,25 +43,17 @@ function initialize () {
       require('devtron').install()
     }
 
-    mainWindow.on('closed', () => {
-      mainWindow = null
-    })
+    mainWindow.on('closed', () => mainWindow = null)
   }
 
-  app.on('ready', () => {
-    createWindow()
-  })
+  app.on('ready', createWindow)
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit()
-    }
+    if (process.platform !== 'darwin') app.quit()
   })
 
   app.on('activate', () => {
-    if (mainWindow === null) {
-      createWindow()
-    }
+    if (mainWindow === null) createWindow()
   })
 }
 
