@@ -229,6 +229,6 @@ http.createServer((request, response, log) => {
         return;
     }
 }, constants.ServerPort);
-process_logs.write_pid('app');
+process_logs.write_pid('server');
 
 console.log(constants.ServerHomeMessage);

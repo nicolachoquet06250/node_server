@@ -16,6 +16,7 @@ class process_logs {
   }
 
   write_pid(type) {
+    this.create_pids_dir();
     fs.writeFileSync(`${this.scripts_logs_path}/pids/${type}_pid.log`, this.pid);
   }
 
@@ -30,23 +31,26 @@ class process_logs {
   }
 
   run(type='all') {
-    this.create_pids_dir();
     if(type === 'all') {
       this.run('server');
       this.run('app');
     }
     else {
-      exec(this.run_cmd(), err => {
+      exec(this.run_cmd(type), err => {
         if (err) this.write_error(type, 'start', err);return;
       });
     }
   }
 
   stop(type='all') {
-    const pid = fs.readFileSync(`${this.scripts_logs_path}/pids/${type}_pid.log`);
-    if(!process.kill(pid)) this.write_error(type, 'stop', `${pid} : processus not found !`);
+    if (type === 'all') {
+      this.stop('server');
+      this.stop('app');
+    }
     else {
-      fs.unlink(`${this.scripts_logs_path}/pids/${type}_pid.log`);
+      const pid = fs.readFileSync(`${this.scripts_logs_path}/pids/${type}_pid.log`);
+      if (!process.kill(pid)) this.write_error(type, 'stop', `${pid} : processus not found !`);
+      else fs.unlink(`${this.scripts_logs_path}/pids/${type}_pid.log`);
     }
   }
 
