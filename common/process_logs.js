@@ -70,6 +70,54 @@ class process_logs {
   dir_exists() {
     return fs.existsSync(`${this.root_path}/${this.get_argv()[2]}`)
   }
+
+  write_disponible_port() {
+    let ports = [];
+    if(process.platform === 'darwin') {
+      exec('netstat -a', (err, output) => {
+        let regex = /[\ ]+/;
+        let m;
+        while ((m = regex.exec(output)) !== null) {
+          // This is necessary to avoid infinite loops with zero-width matches
+          // if (m.index === regex.lastIndex) {
+          //   regex.lastIndex++;
+          // }
+          console.log(m[2]);
+        }
+      });
+    }
+    else {
+      let regex = process.platform === 'linux' ?
+        /[a-zA-Z0-9]+[\ |\t]+[0-9]+[\ |\t]+[0-9]+[\ |\t]+([a-z0-9\-\.\[\:\]]+)\:([a-z\-0-9]+)[\ |\t]+([a-z0-9\-\.\[\:\]]+)\:([a-z0-9\-\*]+)[\ |\t]+[0-9a-zA-Z\_\ ]+/g
+        : /[a-zA-Z]+[\ |\t]+([0-9\.]+)\:([0-9]+)[\ |\t]+[a-zA-Z\:0-9]+[\ |\t]+[a-zA-Z]+/;
+
+      exec('netstat -a', (err, output) => {
+        let m;
+        while ((m = regex.exec(output)) !== null) {
+          if (m.index === regex.lastIndex) regex.lastIndex++;
+          let port_generated = '';
+
+          for(let i = 0, max = 5; i<max; i++) {
+            port_generated += Math.floor(Math.random() * Math.floor(9))
+          }
+          port_generated = parseInt(port_generated);
+
+          let parsed = parseInt(m[2]);
+          if (isNaN(parsed)) { parsed = m[2] }
+          if(typeof parsed === 'number') {
+            console.log(port_generated, parsed);
+            if(port_generated !== parsed) {
+              return parsed;
+            }
+            fs.writeFileSync(`${__dirname}/../server/conf/server_infos.json`, JSON.stringify({
+              ServerPort: parsed
+            }));
+            // return port_generated === parsed ? this.get_disponible_port() : parsed;
+          }
+        }
+      });
+    }
+  }
 }
 
 module.exports = new process_logs();

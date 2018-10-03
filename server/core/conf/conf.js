@@ -4,15 +4,15 @@ let fs = require('fs');
 
 class conf {
     constructor() {
-        this.formats = JSON.parse(fs.readFileSync('./conf/formats.json').toString());
-        this.js_authorizations = JSON.parse(fs.readFileSync('./conf/js_authorizations.json').toString());
-        this.scss_authorizations = JSON.parse(fs.readFileSync('./conf/scss_authorizations.json').toString());
-        this.router = JSON.parse(fs.readFileSync('./conf/router.json').toString());
-        this.sql = JSON.parse(fs.readFileSync('./conf/sql_conf.json').toString());
-        this.static_dirs = JSON.parse(fs.readFileSync('./conf/static_dirs.json').toString());
-        this.access_rights = JSON.parse(fs.readFileSync('./conf/access_rights.json').toString());
-        this.files_extensions = JSON.parse(fs.readFileSync('./conf/files_extensions.json').toString());
-        this.http_methods = JSON.parse(fs.readFileSync('./conf/http_methods.json').toString());
+        this.formats = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/formats.json`)).toString());
+        this.js_authorizations = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/js_authorizations.json`)).toString());
+        this.scss_authorizations = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/scss_authorizations.json`)).toString());
+        this.router = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/router.json`)).toString());
+        this.sql = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/sql_conf.json`)).toString());
+        this.static_dirs = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/static_dirs.json`)).toString());
+        this.access_rights = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/access_rights.json`)).toString());
+        this.files_extensions = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/files_extensions.json`)).toString());
+        this.http_methods = JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/http_methods.json`)).toString());
     }
 
     get_formats() {
@@ -49,6 +49,15 @@ class conf {
 
     get_http_methods() {
         return this.http_methods;
+    }
+
+    get_server_port_generated() {
+      if (fs.existsSync(fs.realpathSync(`${__dirname}/../../conf/server_infos.json`))) {
+        return JSON.parse(fs.readFileSync(fs.realpathSync(`${__dirname}/../../conf/server_infos.json`)));
+      }
+      else {
+          return constants.ServerPort;
+      }
     }
 }
 

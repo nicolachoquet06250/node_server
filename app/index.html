@@ -28,6 +28,10 @@
   <link rel="import" href="sections/system/protocol-handler.html">
   <link rel="import" href="sections/media/pdf.html">
   <link rel="import" href="sections/media/desktop-capturer.html">
+
+  <script src="https://code.jquery.com/jquery-3.3.1.js"
+          integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+          crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -110,6 +114,21 @@
     require('./assets/demo-btns')
     require('./assets/code-blocks')
     require('./assets/normalize-shortcuts')
+    const request = require('request');
+    const constants = require('../server/core/utils/constantes')
+    const $ = require('./assets/jquery')
+
+    $(window).ready(() => {
+      $.ajax({
+        url: `${constants.Host}:${constants.ServerPort}/count/files.json`,
+        method: 'GET'
+      }).done( body => {
+        alert(`Nombre total de fichiers du projet ( avec ajax et jquery ): ${body.nb_files}`);
+      });
+    });
+    request.get(`${constants.Host}:${constants.ServerPort}/count/files.json`, {}, (error, response, body) => {
+      alert(`Nombre total de fichiers du projet ( avec le module request de node.js ): ${JSON.parse(body).nb_files}`);
+    });
   </script>
 </body>
 </html>
